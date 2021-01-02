@@ -2,7 +2,7 @@ package org.geeksus.scala.oop.commands
 
 import org.geeksus.scala.oop.filesystem.State
 
-trait Command {
+trait Command { //** improve by extending -> extends (State => State) {...}
   def apply(state: State): State
 }
 
@@ -13,6 +13,8 @@ object Command {
   val TOUCH = "touch"
   val CD = "cd"
   val RM = "rm"
+  val ECHO = "echo"
+  val CAT = "cat"
 
   def emptyCommand: Command = new Command {
     override def apply(state: State): State = state
@@ -25,6 +27,7 @@ object Command {
 
   def from(input: String): Command = {
     val tokens: Array[String] = input.split(" ")
+    // *** improve using pattern matching
 
     if (input.isEmpty || tokens.isEmpty) emptyCommand
     else if (MKDIR.equals(tokens(0))) {
@@ -43,6 +46,12 @@ object Command {
     } else if (RM.equals(tokens(0))) {
       if (tokens.length < 2) incompleteCommand(RM)
       else new Rm((tokens(1)))
+    } else if (ECHO.equals(tokens(0))) {
+      if (tokens.length < 2) incompleteCommand(ECHO)
+      else new Echo(tokens.tail)
+    } else if (CAT.equals(tokens(0))) {
+      if (tokens.length < 2) incompleteCommand(CAT)
+      else new Cat(tokens(1))
     }
     else new UnknownCommand
   }
